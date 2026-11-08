@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Websites and resources Lausanne teachers have found and shared with each other.">
+<title>Teacher Resource Share</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: a toolbar (search, subject, grade, share button), an optional share form, then one card per shared resource, newest first. Lausanne brand, same look as the PD Day page. */
+:root {
+  --navy: #00274C;
+  --gold: #FFCB05;
+  --teal: #1a7fa3;
+  --ink: #142a40;
+  --muted: #5b6e82;
+  --line: #d6dee7;
+  --band: #eef2f6;
+  --paper: #ffffff;
+  --page: #f8fafc;
+  --fav-bg: #fff8d6;
+  --danger: #a3262a;
+  --display: "Montserrat", "Arial Black", system-ui, sans-serif;
+  --head: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.sheet {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-block: 28px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Header */
+.eyebrow {
+  margin: 0;
+  font-family: var(--head);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding-bottom: 14px;
+  border-bottom: 3px solid var(--gold);
+}
+
+h1 {
+  margin: 4px 0 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--navy);
+  text-wrap: balance;
+}
+
+.logo { display: block; height: 56px; width: auto; max-width: 100%; }
+
+.intro { margin: 14px 0 0; max-width: 62ch; color: var(--muted); }
+
+/* Toolbar */
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+  margin: 20px 0 0;
+  padding: 12px;
+  background: var(--band);
+  border-radius: 10px;
+}
+
+label { display: flex; flex-direction: column; gap: 3px; font-size: 0.8rem; font-weight: 600; color: var(--muted); min-width: 0; }
+
+input, select, textarea {
+  font: 400 0.95rem var(--body);
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  min-width: 0;
+  width: 100%;
+}
+textarea { resize: vertical; min-height: 4.5em; line-height: 1.4; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--teal); outline-offset: 0; border-color: var(--teal); }
+
+.btn {
+  font: 600 0.95rem/1 var(--body);
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 2px solid var(--navy);
+  background: var(--paper);
+  color: var(--navy);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--navy); color: #fff; }
+.btn.primary { background: var(--navy); color: #fff; }
+.btn.primary:hover { background: #0b3a66; }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.btn:disabled { opacity: 0.6; cursor: default; }
+
+/* Share form */
+.share {
+  margin-top: 16px;
+  padding: 18px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 6px solid var(--navy);
+  border-radius: 0 0 10px 10px;
+}
+.share[hidden] { display: none; }
+.share h2 {
+  margin: 0 0 12px;
+  font: 700 1.3rem/1.2 var(--head);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.share-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 16px; }
+.share-grid .wide { grid-column: 1 / -1; }
+
+fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+legend { padding: 0; margin-bottom: 6px; font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { position: relative; display: inline-flex; }
+.chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.chip span {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+.chip input:checked + span { background: var(--navy); border-color: var(--navy); color: #fff; }
+.chip input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 1px; }
+
+.share-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 16px; }
+.form-msg { margin: 0; font-size: 0.9rem; color: var(--danger); }
+
+/* List */
+.count { margin: 18px 0 8px; font-size: 0.9rem; color: var(--muted); }
+.status { margin: 6px 0 0; font-size: 0.88rem; color: var(--muted); }
+.posts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.empty { grid-column: 1 / -1; padding: 28px 16px; text-align: center; color: var(--muted); background: var(--band); border-radius: 10px; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--gold);
+  border-radius: 0 0 10px 10px;
+  min-width: 0;
+}
+.card h2 { margin: 0; font: 700 1.3rem/1.15 var(--head); text-wrap: balance; }
+.card h2 a { color: var(--navy); text-decoration: none; overflow-wrap: anywhere; }
+.card h2 a:hover { text-decoration: underline; }
+.card h2 a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.host { margin: -4px 0 0; font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { padding: 2px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: var(--band); color: var(--navy); }
+.tag.grade { background: #e3f1f7; color: #0f5873; }
+
+.desc { margin: 0; font-size: 0.95rem; overflow-wrap: anywhere; }
+.fav {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--fav-bg);
+  border-left: 4px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.93rem;
+  overflow-wrap: anywhere;
+}
+.fav b { color: var(--navy); }
+
+.by { margin: auto 0 0; padding-top: 4px; display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); }
+.by b { color: var(--ink); font-weight: 600; }
+.btn-remove { border: 0; background: none; color: var(--danger); font: 600 0.82rem/1 var(--body); cursor: pointer; padding: 4px; }
+.btn-remove:focus-visible { outline: 2px solid var(--danger); }
+
+@media (max-width: 720px) {
+  .toolbar { grid-template-columns: 1fr 1fr; }
+  .toolbar .search, .toolbar .btn { grid-column: 1 / -1; }
+  .posts { grid-template-columns: 1fr; }
+  .share-grid { grid-template-columns: 1fr; }
+  .logo { height: 44px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card.is-new { animation: arrive 0.6s ease-out; }
+  @keyframes arrive { from { background: #fff3b0; } to { background: var(--paper); } }
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <header>
+    <div class="masthead">
+      <div>
+        <p class="eyebrow">Lausanne teachers · Shared finds</p>
+        <h1>Resource Share</h1>
+      </div>
+      <img class="logo" alt="Lausanne Collegiate School" width="469" height="132" src="lausanne-logo.png">
+    </div>
+    <p class="intro">Found a website or tool that works with your students? Share it here so colleagues can find it too. Filter by subject or grade to see what fits your class.</p>
+  </header>
+
+  <div class="toolbar" role="search">
+    <label class="search">Search
+      <input id="q" type="search" placeholder="Try “fractions” or “primary sources”" autocomplete="off">
+    </label>
+    <label>Subject
+      <select id="f-subject"><option value="">All subjects</option></select>
+    </label>
+    <label>Grade
+      <select id="f-grade"><option value="">All grades</option></select>
+    </label>
+    <button class="btn primary" id="open-share" type="button" aria-expanded="false" aria-controls="share">+ Share a resource</button>
+  </div>
+
+  <form class="share" id="share" hidden novalidate>
+    <h2>Share a resource</h2>
+    <div class="share-grid">
+      <label>Website link
+        <input id="s-url" type="url" inputmode="url" maxlength="2000" placeholder="https://…" autocomplete="off">
+      </label>
+      <label>Name of the resource
+        <input id="s-title" maxlength="120" placeholder="Desmos Classroom" autocomplete="off">
+      </label>
+      <fieldset class="wide">
+        <legend>Subject(s)</legend>
+        <div class="chips" id="s-subjects"></div>
+      </fieldset>
+      <fieldset class="wide">
+        <legend>Grade levels it could work for</legend>
+        <div class="chips" id="s-grades"></div>
+      </fieldset>
+      <label class="wide">What is it?
+        <textarea id="s-desc" maxlength="1000" placeholder="A short description: what it does and how you use it."></textarea>
+      </label>
+      <label class="wide">Your favorite part
+        <textarea id="s-fav" maxlength="500" placeholder="What makes it worth a colleague's time?"></textarea>
+      </label>
+      <label>Your name
+        <input id="s-name" maxlength="60" placeholder="Courtney Mark" autocomplete="name">
+      </label>
+    </div>
+    <div class="share-actions">
+      <button class="btn primary" id="s-submit" type="submit">Share it</button>
+      <button class="btn" id="s-cancel" type="button">Cancel</button>
+      <p class="form-msg" id="s-msg" role="alert" hidden></p>
+    </div>
+  </form>
+
+  <p class="status" id="status" hidden></p>
+  <p class="count" id="count" aria-live="polite"></p>
+  <ul class="posts" id="posts"></ul>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Posts: a Google Sheet behind an Apps Script web app. Paste its URL (ends in /exec) here.
+  const API_URL = "";
+  const REFRESH_MS = 30000;
+
+  const SUBJECTS = ["Math", "English / Language Arts", "Science", "Social Studies / I&S", "World Languages", "Visual Arts", "Music", "Drama", "PE / Health", "Design / Technology", "Library / Research", "Learning Support", "SEL / Counseling", "Any subject"];
+  const GRADES = ["Early Childhood", "Grades 1–2", "Grades 3–4", "Grades 5–6", "Grades 7–8", "Grades 9–10", "Grades 11–12"];
+
+  let posts = [];
+  let postsKey = "";
+  let loaded = false;
+  let seen = null;               // ids already shown, so only new arrivals flash
+
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
+  };
+  // Posts shared from this browser: id -> remove token
+  let mine = {};
+  try { mine = JSON.parse(store.get("rs-mine") || "{}") || {}; } catch (e) {}
+
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  // ---- Filters and form choices
+  SUBJECTS.filter(s => s !== "Any subject").forEach(s => $("#f-subject").appendChild(new Option(s, s)));
+  GRADES.forEach(g => $("#f-grade").appendChild(new Option(g, g)));
+
+  function chips(box, name, values) {
+    values.forEach(v => {
+      const label = el("label", "chip");
+      const input = el("input");
+      Object.assign(input, { type: "checkbox", name: name, value: v });
+      label.append(input, el("span", null, v));
+      box.appendChild(label);
+    });
+  }
+  chips($("#s-subjects"), "subject", SUBJECTS);
+  chips($("#s-grades"), "grade", GRADES);
+
+  ["#q", "#f-subject", "#f-grade"].forEach(sel => $(sel).addEventListener("input", renderPosts));
+
+  // ---- Share form
+  const form = $("#share");
+  const openBtn = $("#open-share");
+  const msg = $("#s-msg");
+
+  function openShare() {
+    form.hidden = false;
+    openBtn.setAttribute("aria-expanded", "true");
+    $("#s-name").value = $("#s-name").value || store.get("rs-name") || "";
+    $("#s-url").focus();
+  }
+  function closeShare() {
+    form.hidden = true;
+    openBtn.setAttribute("aria-expanded", "false");
+    msg.hidden = true;
+  }
+  openBtn.addEventListener("click", () => form.hidden ? openShare() : closeShare());
+  $("#s-cancel").addEventListener("click", () => { closeShare(); openBtn.focus(); });
+
+  const checked = name => [...form.querySelectorAll("input[name=" + name + "]:checked")].map(i => i.value);
+  const fail = (text, focus) => { msg.textContent = text; msg.hidden = false; if (focus) focus.focus(); };
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    msg.hidden = true;
+    let raw = $("#s-url").value.trim();
+    if (raw && !/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = "https://" + raw;
+    const href = safeUrl(raw);
+    const title = $("#s-title").value.trim();
+    const subjects = checked("subject");
+    const grades = checked("grade");
+    const description = $("#s-desc").value.trim();
+    const favorite = $("#s-fav").value.trim();
+    const name = $("#s-name").value.trim();
+
+    if (!href) return fail("Paste the full website link, like https://www.desmos.com", $("#s-url"));
+    if (!title) return fail("Give the resource a name.", $("#s-title"));
+    if (!subjects.length) return fail("Pick at least one subject.", $("#s-subjects input"));
+    if (!grades.length) return fail("Pick at least one grade level.", $("#s-grades input"));
+    if (!description) return fail("Add a short description.", $("#s-desc"));
+    if (!favorite) return fail("Tell colleagues your favorite part.", $("#s-fav"));
+    if (!name) return fail("Add your name so colleagues know who to ask.", $("#s-name"));
+
+    const submit = $("#s-submit");
+    submit.disabled = true;
+    try {
+      const res = await api({ action: "add", url: href, title, subjects, grades, description, favorite, name });
+      store.set("rs-name", name);
+      mine[res.id] = res.token;
+      store.set("rs-mine", JSON.stringify(mine));
+      form.reset();
+      closeShare();
+      await load(true);
+      setStatus("Thanks! Your resource is shared.");
+      setTimeout(() => setStatus(""), 4000);
+    } catch (err) {
+      fail(errorText(err));
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  // ---- Rendering
+  function hostOf(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return ""; }
+  }
+
+  function safeUrl(url) {
+    try {
+      const u = new URL(url);
+      return /^https?:$/.test(u.protocol) ? u.href : "";
+    } catch (e) { return ""; }
+  }
+
+  function shortDate(ms) {
+    if (!ms) return "";
+    return new Date(ms).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function matches(p) {
+    const q = $("#q").value.trim().toLowerCase();
+    const subject = $("#f-subject").value;
+    const grade = $("#f-grade").value;
+    if (subject && !p.subjects.includes(subject) && !p.subjects.includes("Any subject")) return false;
+    if (grade && !p.grades.includes(grade)) return false;
+    if (q) {
+      const hay = [p.title, p.url, p.description, p.favorite, p.name, p.subjects.join(" "), p.grades.join(" ")].join(" ").toLowerCase();
+      if (!q.split(/\s+/).every(w => hay.includes(w))) return false;
+    }
+    return true;
+  }
+
+  function card(p, isNew) {
+    const href = safeUrl(p.url);
+    const li = el("li", "card" + (isNew ? " is-new" : ""));
+
+    const h = el("h2");
+    if (href) {
+      const a = el("a", null, p.title || hostOf(href));
+      Object.assign(a, { href, target: "_blank", rel: "noopener noreferrer" });
+      h.appendChild(a);
+    } else {
+      h.textContent = p.title;
+    }
+    li.appendChild(h);
+    if (href) li.appendChild(el("p", "host", hostOf(href)));
+
+    const tags = el("ul", "tags");
+    p.subjects.forEach(s => tags.appendChild(el("li", "tag", s)));
+    p.grades.forEach(g => tags.appendChild(el("li", "tag grade", g)));
+    if (tags.children.length) li.appendChild(tags);
+
+    if (p.description) li.appendChild(el("p", "desc", p.description));
+    if (p.favorite) {
+      const fav = el("p", "fav");
+      fav.append(el("b", null, "Favorite part: "), document.createTextNode(p.favorite));
+      li.appendChild(fav);
+    }
+
+    const by = el("p", "by");
+    const who = el("span");
+    who.append("Shared by ", el("b", null, p.name || "a colleague"), p.at ? " · " + shortDate(p.at) : "");
+    by.appendChild(who);
+    if (mine[p.id]) {
+      const rm = el("button", "btn-remove", "Remove");
+      rm.type = "button";
+      rm.setAttribute("aria-label", "Remove " + (p.title || "this resource"));
+      rm.addEventListener("click", () => removePost(p, rm));
+      by.appendChild(rm);
+    }
+    li.appendChild(by);
+    return li;
+  }
+
+  function renderPosts() {
+    const list = $("#posts");
+    list.replaceChildren();
+    if (!loaded) {
+      $("#count").textContent = API_URL ? "Loading resources…" : "";
+      return;
+    }
+    const shown = posts.filter(matches).sort((a, b) => (b.at || 0) - (a.at || 0));
+    const filtering = $("#q").value.trim() || $("#f-subject").value || $("#f-grade").value;
+    $("#count").textContent = filtering
+      ? shown.length + " of " + posts.length + " resources"
+      : posts.length + (posts.length === 1 ? " resource" : " resources");
+
+    if (!shown.length) {
+      list.appendChild(el("li", "empty", posts.length ? "Nothing matches those filters yet." : "No resources yet. Be the first to share one."));
+    }
+    shown.forEach(p => list.appendChild(card(p, seen && !seen.has(p.id))));
+    seen = new Set(posts.map(p => p.id));
+  }
+
+  function setStatus(text) {
+    const s = $("#status");
+    s.textContent = text || "";
+    s.hidden = !text;
+  }
+
+  // ---- Talking to the sheet
+  function errorText(err) {
+    const code = err && err.code;
+    if (code === "bad_url") return "Paste the full website link, like https://www.desmos.com";
+    if (code === "missing") return "Fill in every field, then try again.";
+    if (code === "full") return "The list is full. Ask Courtney Mark to clear out some old posts.";
+    return "That didn't save. Check your connection and try again.";
+  }
+
+  async function api(payload) {
+    // text/plain keeps this a simple request, which Apps Script accepts from any site
+    const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (!data.ok) { const err = new Error(data.error); err.code = data.error; throw err; }
+    return data;
+  }
+
+  async function removePost(p, btn) {
+    if (!confirm("Remove “" + (p.title || "this resource") + "”?")) return;
+    btn.disabled = true;
+    try {
+      await api({ action: "remove", id: p.id, token: mine[p.id] });
+      delete mine[p.id];
+      store.set("rs-mine", JSON.stringify(mine));
+      await load(true);
+    } catch (err) {
+      btn.disabled = false;
+      setStatus(err.code === "not_found" ? "That post was already removed." : errorText(err));
+    }
+  }
+
+  // ---- Refresh the list now and then, and right away when the tab comes back
+  async function load(force) {
+    try {
+      const res = await fetch(API_URL, { cache: "no-store" });
+      const data = await res.json();
+      const next = Array.isArray(data.posts) ? data.posts : [];
+      const nextKey = JSON.stringify(next);
+      setStatus("");
+      if (!force && loaded && nextKey === postsKey) return;
+      posts = next.map(p => ({ ...p, subjects: Array.isArray(p.subjects) ? p.subjects : [], grades: Array.isArray(p.grades) ? p.grades : [] }));
+      postsKey = nextKey;
+      loaded = true;
+      renderPosts();
+    } catch (e) {
+      if (!loaded) { loaded = true; renderPosts(); }
+      setStatus("Can't reach the resource list right now. Trying again…");
+    }
+  }
+
+  renderPosts();
+  if (API_URL) {
+    load();
+    setInterval(() => { if (!document.hidden) load(); }, REFRESH_MS);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+  } else {
+    setStatus("The resource list isn't connected yet.");
+    openBtn.disabled = true;
+  }
+})();
+</script>
+</body>
+</html>
