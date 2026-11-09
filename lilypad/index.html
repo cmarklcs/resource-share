@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}</style>
+<title>Lily Pad Hops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Layout: one pond "game board" card under a sticky rule strip; number line is the hero, controls sit under it. */
+:root{
+  --bg:#E6F2F1; --surface:#FFFFFF; --ink:#15323A; --muted:#4F6C72; --line:#C9DEDD;
+  --water:#C4E4E6; --pad:#9CCB5A; --pad-edge:#5E9A33;
+  --frog:#3DAA55; --frog-ink:#123A22;
+  --plus:#14834A; --plus-soft:#DDF3E5; --minus:#D8571E; --minus-soft:#FCE6DA;
+  --sun:#E9A800; --sun-soft:#FFF2C7;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Andika","Comic Sans MS",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E2127; --surface:#163039; --ink:#E5F3F0; --muted:#9DBCBF; --line:#2A4A52;
+  --water:#1C4650; --pad:#6E9E3E; --pad-edge:#A7D16C;
+  --frog:#5CC673; --frog-ink:#06200F;
+  --plus:#4DD18B; --plus-soft:#173F2C; --minus:#FF8F55; --minus-soft:#4A2717;
+  --sun:#F6C445; --sun-soft:#3D3313; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E2127; --surface:#163039; --ink:#E5F3F0; --muted:#9DBCBF; --line:#2A4A52;
+  --water:#1C4650; --pad:#6E9E3E; --pad-edge:#A7D16C;
+  --frog:#5CC673; --frog-ink:#06200F;
+  --plus:#4DD18B; --plus-soft:#173F2C; --minus:#FF8F55; --minus-soft:#4A2717;
+  --sun:#F6C445; --sun-soft:#3D3313; color-scheme:dark}
+
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px;display:grid;gap:16px}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.05}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.stars{display:flex;align-items:center;gap:8px;background:var(--sun-soft);border:2px solid var(--sun);border-radius:999px;padding:6px 16px;font-family:var(--display);font-weight:800;font-size:24px;font-variant-numeric:tabular-nums}
+.stars svg{width:26px;height:26px}
+.stars.pop{animation:pop .5s}
+@keyframes pop{40%{transform:scale(1.25)}}
+
+.rules{display:flex;flex-wrap:wrap;gap:10px}
+.rule{display:flex;align-items:center;gap:10px;border-radius:14px;padding:8px 14px;font-weight:700;font-size:18px;border:2px solid}
+.rule .sym{font-family:var(--display);font-size:30px;line-height:1;font-weight:800}
+.rule.plus{background:var(--plus-soft);border-color:var(--plus);color:var(--plus)}
+.rule.minus{background:var(--minus-soft);border-color:var(--minus);color:var(--minus)}
+.rule span.word{color:var(--ink)}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.seg{display:flex;flex-wrap:wrap;gap:6px;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:5px}
+.seg button{font:700 17px var(--body);color:var(--muted);background:none;border:0;border-radius:11px;padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+.board{background:var(--surface);border:2px solid var(--line);border-radius:24px;padding:20px max(16px,2.5vw);display:grid;gap:16px;min-width:0}
+.prompt{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.ask{font-size:20px;color:var(--muted);margin:0;max-width:60ch}
+.ask b{color:var(--ink)}
+.read{font:700 16px var(--body);display:flex;align-items:center;gap:6px;background:none;border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:6px 12px;cursor:pointer}
+.model{font-family:var(--display);font-weight:800;font-size:clamp(44px,10vw,72px);line-height:1;display:flex;align-items:center;gap:.25em;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.op.plus{color:var(--plus)} .op.minus{color:var(--minus)}
+.blank{min-width:1.1em;text-align:center;border-bottom:6px dashed var(--muted);color:var(--muted)}
+.blank.done{border-bottom-color:transparent;color:var(--ink);animation:pop .5s}
+.dots{display:flex;gap:8px;align-items:center;font-size:16px;color:var(--muted)}
+.dot{width:18px;height:18px;border-radius:50%;border:3px solid var(--muted)}
+.dot.on{background:var(--sun);border-color:var(--sun)}
+
+.pond{overflow-x:auto;border-radius:18px;background:var(--water);-webkit-overflow-scrolling:touch}
+.pond svg{display:block;width:100%;height:auto}
+.pond.wide svg{min-width:900px}
+.padnum{font-family:var(--body);font-weight:700;font-size:24px;fill:var(--ink);text-anchor:middle}
+.lily{fill:var(--pad);stroke:var(--pad-edge);stroke-width:2}
+.lily.start{stroke:var(--sun);stroke-width:5}
+.lily.land{stroke:var(--ink);stroke-width:5}
+.arc{fill:none;stroke-width:5;stroke-linecap:round}
+.arc.plus{stroke:var(--plus)} .arc.minus{stroke:var(--minus)}
+.hopn{font-family:var(--display);font-weight:800;font-size:22px;text-anchor:middle}
+.hopn.plus{fill:var(--plus)} .hopn.minus{fill:var(--minus)}
+#frog .skin{fill:var(--frog);stroke:var(--frog-ink);stroke-width:2.5}
+#frog .ink{fill:var(--frog-ink)}
+#frog .mouth{fill:none;stroke:var(--frog-ink);stroke-width:2.5;stroke-linecap:round}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.big{font:800 24px var(--display);border-radius:18px;padding:12px 26px;cursor:pointer;border:3px solid;display:flex;align-items:center;gap:10px;min-height:64px}
+.big.left{background:var(--minus-soft);color:var(--minus);border-color:var(--minus)}
+.big.right{background:var(--plus-soft);color:var(--plus);border-color:var(--plus)}
+.big.next{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.big.ghost{background:none;color:var(--ink);border-color:var(--line)}
+.big:disabled{opacity:.45;cursor:default}
+.big .arrow{font-size:34px;line-height:1}
+
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.choice{font:800 34px var(--display);background:var(--surface);color:var(--ink);border:3px solid var(--line);border-radius:18px;padding:10px;cursor:pointer;font-variant-numeric:tabular-nums}
+.choice.right{border-color:var(--plus);background:var(--plus-soft)}
+.choice.wrong{border-color:var(--minus);opacity:.6}
+
+.feedback{min-height:1.5em;font-size:20px;font-weight:700;text-align:center;margin:0}
+.feedback.good{color:var(--plus)} .feedback.oops{color:var(--minus)}
+
+/* fact family */
+.family{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:640px){.family{grid-template-columns:1fr}}
+.house{display:grid;justify-items:center}
+.roof{width:100%;max-width:260px;aspect-ratio:2/1;background:var(--sun);clip-path:polygon(50% 0,100% 100%,0 100%);display:grid;grid-template-rows:1fr 1fr;align-items:end;padding-bottom:6px}
+.roof .top{text-align:center;font:800 34px var(--display);color:#15323A;align-self:end}
+.roof .pair{display:flex;justify-content:space-around;font:800 30px var(--display);color:#15323A;padding:0 22%}
+.rooms{width:88%;max-width:228px;border:3px solid var(--sun);border-top:0;border-radius:0 0 12px 12px;padding:10px;display:grid;gap:8px;background:var(--surface)}
+.room{height:46px;border:2px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;gap:.25em;font:800 26px var(--display);font-variant-numeric:tabular-nums}
+.room.filled{border-style:solid;border-color:var(--line);animation:pop .5s}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-content:start}
+.cards .choice{font-size:28px}
+.cards .choice.used{visibility:hidden}
+.notice{background:var(--sun-soft);border:2px solid var(--sun);border-radius:16px;padding:14px 18px;font-size:19px}
+.notice b.p{color:var(--plus)} .notice b.m{color:var(--minus)}
+
+.teacher{font-size:15px;color:var(--muted);max-width:75ch}
+.teacher summary{cursor:pointer;font-weight:700}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Lily Pad Hops</h1>
+    <div class="stars" id="stars" aria-label="Stars earned">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.6 7.2.8-5.4 4.9 1.5 7.1L12 17.8 5.7 21.4l1.5-7.1L1.8 9.4 9 8.6z" style="fill:var(--sun)"/></svg>
+      <span id="starCount">0</span>
+    </div>
+  </header>
+
+  <div class="rules" aria-label="Hop rules">
+    <div class="rule plus"><span class="sym">+</span><span class="word">Adding hops</span> RIGHT <span class="sym">→</span></div>
+    <div class="rule minus"><span class="sym">←</span><span class="sym">−</span><span class="word">Subtracting hops</span> LEFT</div>
+  </div>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Game">
+      <button id="m-hop" aria-pressed="true">1. Hop It</button>
+      <button id="m-which" aria-pressed="false">2. Which Model?</button>
+      <button id="m-family" aria-pressed="false">3. Fact Family</button>
+    </div>
+    <div class="seg" role="group" aria-label="Numbers">
+      <button id="lv10" aria-pressed="true">Within 10</button>
+      <button id="lv20" aria-pressed="false">Within 20</button>
+    </div>
+  </div>
+
+  <section class="board" id="board">
+    <div class="prompt">
+      <p class="ask" id="ask"></p>
+      <button class="read" id="readBtn" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" style="fill:currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"/></svg>
+        Read to me
+      </button>
+    </div>
+    <div id="top"></div>
+    <div class="pond" id="pond">
+      <svg id="line" role="img" aria-label="Number line with lily pads"></svg>
+    </div>
+    <div id="bottom"></div>
+    <p class="feedback" id="fb" aria-live="polite"></p>
+  </section>
+
+  <details class="teacher">
+    <summary>Teacher notes</summary>
+    <p>Supports 1.OA.B.4, 1.OA.C.5 and 1.OA.C.6 (relating counting to addition and subtraction, and understanding subtraction as an unknown-addend problem). <b>Hop It</b> has students choose the direction before every hop. <b>Which Model?</b> has them read hops and pick the number model; wrong answers explain the mix-up (wrong start or wrong direction). <b>Fact Family</b> has them find all four facts, then names the pattern: plus facts end on the whole, minus facts start on it. Stars reset when the page reloads.</p>
+  </details>
+</div>
+
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MINUS="−";
+const S=60,M=40,Y0=118,H=182;
+const boot=window.claude?.hot?.data||{};
+const state={mode:boot.mode||"hop",max:boot.max||10,stars:boot.stars||0,busy:false,speak:""};
+window.claude?.hot?.snapshot?.(()=>({mode:state.mode,max:state.max,stars:state.stars}));
+
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const X=n=>M+n*S;
+const sym=op=>op==="+"?"+":MINUS;
+const word=op=>op==="+"?"plus":"minus";
+const kind=op=>op==="+"?"plus":"minus";
+const calc=(a,op,b)=>op==="+"?a+b:a-b;
+function modelHTML(a,op,b,c){return `${a} <span class="op ${kind(op)}">${sym(op)}</span> ${b} = ${c}`}
+function mk(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function say(t){try{const s=window.speechSynthesis;if(!s)return;s.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=.88;s.speak(u)}catch(e){}}
+function fb(text,cls){const f=$("fb");f.textContent=text;f.className="feedback "+(cls||"")}
+function addStar(){state.stars++;$("starCount").textContent=state.stars;const s=$("stars");s.classList.remove("pop");void s.offsetWidth;s.classList.add("pop")}
+function shake(el){el.classList.remove("shake");void el.getBBox?.();void el.offsetWidth;el.classList.add("shake")}
+
+/* ---------- number line ---------- */
+let svg,arcs,frog,frogInner,pads=[];
+function buildLine(){
+  svg=$("line");svg.innerHTML="";pads=[];
+  const W=2*M+state.max*S;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  $("pond").classList.toggle("wide",state.max>10);
+  const defs=mk("defs",{},svg);
+  for(const k of ["plus","minus"]){
+    const m=mk("marker",{id:"arr-"+k,viewBox:"0 0 10 10",refX:"6",refY:"5",markerWidth:"3.6",markerHeight:"3.6",orient:"auto-start-reverse"},defs);
+    mk("path",{d:"M0 0L10 5L0 10z",style:`fill:var(--${k})`},m);
+  }
+  for(let n=0;n<=state.max;n++){
+    const g=mk("g",{},svg);
+    pads.push(mk("path",{class:"lily",d:`M${X(n)} ${Y0+10} m-25 0 a25 11 0 1 0 50 0 a25 11 0 0 0 -18 -9 l-7 9 l-3 -11 a25 11 0 0 0 -22 11z`},g));
+    const t=mk("text",{class:"padnum",x:X(n),y:H-10},g);t.textContent=n;
+  }
+  arcs=mk("g",{},svg);
+  frog=mk("g",{id:"frog"},svg);
+  frogInner=mk("g",{},frog);
+  frogInner.innerHTML=`<ellipse class="skin" cx="-15" cy="-3" rx="8" ry="4"/><ellipse class="skin" cx="15" cy="-3" rx="8" ry="4"/>
+  <ellipse class="skin" cx="0" cy="-17" rx="20" ry="15"/>
+  <circle class="skin" cx="-9" cy="-31" r="7.5"/><circle class="skin" cx="9" cy="-31" r="7.5"/>
+  <circle class="ink" cx="-8" cy="-31" r="3.2"/><circle class="ink" cx="10" cy="-31" r="3.2"/>
+  <path class="mouth" d="M-9 -15 Q0 -8 9 -15"/>`;
+}
+function setFrog(n){frog.setAttribute("transform",`translate(${X(n)},${Y0+8})`);follow(X(n))}
+function follow(px){const p=$("pond");if(p.scrollWidth<=p.clientWidth)return;const frac=px/(2*M+state.max*S);p.scrollLeft=frac*p.scrollWidth-p.clientWidth/2}
+function mark(n,cls){pads.forEach(p=>p.classList.remove(cls));if(n!=null&&pads[n])pads[n].classList.add(cls)}
+function clearArcs(){arcs.innerHTML=""}
+function hopOnce(from,to,idx){
+  return new Promise(res=>{
+    const k=to>from?"plus":"minus";
+    const x1=X(from),x2=X(to),mx=(x1+x2)/2,cy=Y0-112;
+    const path=mk("path",{class:"arc "+k,d:`M${x1} ${Y0} Q${mx} ${cy} ${x2} ${Y0}`},arcs);
+    const len=path.getTotalLength();path.style.strokeDasharray=len;path.style.strokeDashoffset=len;
+    const dur=reduce?40:430,t0=performance.now();
+    function step(now){
+      const t=Math.min(1,(now-t0)/dur);
+      const bx=(1-t)**2*x1+2*(1-t)*t*mx+t*t*x2, by=(1-t)**2*Y0+2*(1-t)*t*cy+t*t*Y0;
+      frog.setAttribute("transform",`translate(${bx},${by+8})`);
+      path.style.strokeDashoffset=len*(1-t);
+      if(t<1)requestAnimationFrame(step);
+      else{path.style.strokeDasharray="none";path.setAttribute("marker-end",`url(#arr-${k})`);
+        const tx=mk("text",{class:"hopn "+k,x:mx,y:(Y0+cy)/2-8},arcs);tx.textContent=idx;follow(x2);setTimeout(res,reduce?20:90)}
+    }
+    requestAnimationFrame(step);
+  });
+}
+async function hopRun(start,op,b){
+  let n=start;
+  for(let i=1;i<=b;i++){const to=op==="+"?n+1:n-1;await hopOnce(n,to,i);n=to}
+  return n;
+}
+
+/* ---------- mode 1: Hop It ---------- */
+let P;
+function genProblem(){
+  const max=state.max,cap=max>10?9:max;
+  let op,a,b;
+  for(let tries=0;tries<50;tries++){
+    op=Math.random()<.5?"+":"-";
+    if(op==="+"){a=rnd(0,max-1);b=rnd(1,Math.min(cap,max-a))}
+    else{a=rnd(1,max);b=rnd(1,Math.min(cap,a))}
+    if(!P||P.a!==a||P.b!==b||P.op!==op)break;
+  }
+  return {a,op,b,c:calc(a,op,b)};
+}
+function startHop(){
+  P=genProblem();P.done=0;P.pos=P.a;state.busy=false;
+  buildLine();setFrog(P.a);mark(P.a,"start");mark(null,"land");
+  $("ask").innerHTML=`Start on <b>${P.a}</b>. Make <b>${P.b}</b> hop${P.b>1?"s":""}. Which way does the frog go?`;
+  state.speak=`${P.a} ${word(P.op)} ${P.b}. Start on ${P.a}. Make ${P.b} hops. Which way does the frog go?`;
+  $("top").innerHTML=`<div class="model" aria-live="polite">${P.a} <span class="op ${kind(P.op)}">${sym(P.op)}</span> ${P.b} = <span class="blank" id="blank">?</span></div>
+    <div class="dots" id="dots" aria-label="Hops made">Hops: ${Array.from({length:P.b},()=>'<span class="dot"></span>').join("")}</div>`;
+  $("bottom").innerHTML=`<div class="controls">
+    <button class="big left" id="goL" type="button"><span class="arrow">←</span> Hop left</button>
+    <button class="big right" id="goR" type="button">Hop right <span class="arrow">→</span></button>
+    <button class="big next" id="next" type="button" hidden>Next problem</button></div>`;
+  $("goL").onclick=()=>tryHop("-",$("goL"));
+  $("goR").onclick=()=>tryHop("+",$("goR"));
+  $("next").onclick=startHop;
+  fb("");
+}
+async function tryHop(dir,btn){
+  if(state.busy||P.done>=P.b)return;
+  if(dir!==P.op){
+    shake(btn);
+    fb(P.op==="+"?"Oops! Plus means adding. Adding hops RIGHT →":"Oops! Minus means taking away. Subtracting hops LEFT ←","oops");
+    return;
+  }
+  fb("");state.busy=true;
+  const to=dir==="+"?P.pos+1:P.pos-1;
+  P.done++;await hopOnce(P.pos,to,P.done);P.pos=to;
+  $("dots").querySelectorAll(".dot")[P.done-1].classList.add("on");
+  state.busy=false;
+  if(P.done===P.b){
+    mark(P.c,"land");const bl=$("blank");bl.textContent=P.c;bl.classList.add("done");
+    addStar();
+    fb(`You landed on ${P.c}! ${P.a} ${sym(P.op)} ${P.b} = ${P.c}`,"good");
+    say(`You landed on ${P.c}. ${P.a} ${word(P.op)} ${P.b} equals ${P.c}`);
+    $("goL").disabled=$("goR").disabled=true;$("next").hidden=false;$("next").focus();
+  }
+}
+
+/* ---------- mode 2: Which Model? ---------- */
+let Q;
+async function startWhich(){
+  Q=genProblem();state.busy=true;
+  const inv=Q.op==="+"?"-":"+";
+  const opts=[{a:Q.a,op:Q.op,b:Q.b,c:Q.c,ok:true}];
+  // same numbers, starts at the end and hops back
+  opts.push({a:Q.c,op:inv,b:Q.b,c:Q.a,why:`That model starts on ${Q.c}. Our frog started on ${Q.a}.`});
+  // same start, wrong direction (or wrong count if it would fall off the pond)
+  const wd=calc(Q.a,inv,Q.b);
+  if(wd>=0&&wd<=state.max) opts.push({a:Q.a,op:inv,b:Q.b,c:wd,why:Q.op==="+"?"That one hops LEFT. Our frog hopped RIGHT, so it is adding.":"That one hops RIGHT. Our frog hopped LEFT, so it is subtracting."});
+  else{const b2=Q.b>1?Q.b-1:Q.b+1;opts.push({a:Q.a,op:Q.op,b:b2,c:calc(Q.a,Q.op,b2),why:`Count the hops again. The frog made ${Q.b} hops.`})}
+  shuffle(opts);
+  buildLine();setFrog(Q.a);mark(Q.a,"start");mark(null,"land");
+  $("ask").innerHTML=`Watch the frog hop. <b>Which number model matches?</b>`;
+  state.speak="Watch the frog hop. Which number model matches?";
+  $("top").innerHTML="";
+  $("bottom").innerHTML=`<div class="choices" id="choices">${opts.map((o,i)=>`<button class="choice" type="button" data-i="${i}">${modelHTML(o.a,o.op,o.b,o.c)}</button>`).join("")}</div>
+    <div class="controls" style="margin-top:12px"><button class="big ghost" id="replay" type="button">Watch again</button><button class="big next" id="next" type="button" hidden>Next problem</button></div>`;
+  $("choices").querySelectorAll(".choice").forEach(btn=>btn.onclick=()=>{
+    if(state.busy||Q.solved)return;
+    const o=opts[+btn.dataset.i];
+    if(o.ok){btn.classList.add("right");Q.solved=true;addStar();
+      fb(`Yes! Start on ${Q.a}, hop ${Q.op==="+"?"right":"left"} ${Q.b}, land on ${Q.c}.`,"good");
+      say(`Yes! ${Q.a} ${word(Q.op)} ${Q.b} equals ${Q.c}`);$("next").hidden=false;$("next").focus()}
+    else{btn.classList.add("wrong");btn.disabled=true;fb(o.why,"oops");say(o.why)}
+  });
+  $("replay").onclick=play;$("next").onclick=startWhich;
+  fb("");
+  await play();
+}
+async function play(){
+  state.busy=true;clearArcs();setFrog(Q.a);mark(null,"land");
+  await new Promise(r=>setTimeout(r,reduce?0:350));
+  await hopRun(Q.a,Q.op,Q.b);mark(Q.c,"land");state.busy=false;
+}
+
+/* ---------- mode 3: Fact Family ---------- */
+let F;
+function startFamily(){
+  let p,q,w;
+  do{w=rnd(3,state.max);p=rnd(1,w-1);q=w-p}while(p===q||(F&&F.w===w&&F.p===p));
+  const facts=[{a:p,op:"+",b:q,c:w},{a:q,op:"+",b:p,c:w},{a:w,op:"-",b:p,c:q},{a:w,op:"-",b:q,c:p}].map(f=>({...f,ok:true}));
+  const big=Math.max(p,q),small=Math.min(p,q);
+  const fakes=[{a:w,op:"+",b:small,c:w+small},{a:big,op:"-",b:small,c:big-small}];
+  F={p,q,w,found:0,cards:shuffle([...facts,...fakes])};
+  buildLine();setFrog(0);mark(null,"start");mark(null,"land");
+  $("ask").innerHTML=`These three numbers are a family: <b>${p}, ${q} and ${w}</b>. Tap the <b>4</b> number models that live in their house.`;
+  state.speak=`${p}, ${q}, and ${w} are a fact family. Find the 4 number models that live in their house.`;
+  $("top").innerHTML="";
+  $("bottom").innerHTML=`<div class="family">
+    <div class="house"><div class="roof"><div class="top">${w}</div><div class="pair"><span>${p}</span><span>${q}</span></div></div>
+      <div class="rooms" id="rooms">${'<div class="room"></div>'.repeat(4)}</div></div>
+    <div class="cards" id="cards">${F.cards.map((o,i)=>`<button class="choice" type="button" data-i="${i}">${modelHTML(o.a,o.op,o.b,o.c)}</button>`).join("")}</div>
+  </div>
+  <div id="noticeSlot"></div>
+  <div class="controls" style="margin-top:12px"><button class="big next" id="next" type="button" hidden>New family</button></div>`;
+  $("cards").querySelectorAll(".choice").forEach(btn=>btn.onclick=()=>pickFact(btn));
+  $("next").onclick=startFamily;
+  fb("");
+}
+async function pickFact(btn){
+  if(state.busy)return;
+  const o=F.cards[+btn.dataset.i];
+  if(!o.ok){btn.classList.add("wrong");btn.disabled=true;
+    const msg=`Every fact in this family uses ${F.p}, ${F.q} and ${F.w}. This one doesn't.`;fb(msg,"oops");say(msg);return}
+  state.busy=true;btn.disabled=true;fb(`${o.a} ${sym(o.op)} ${o.b}: start on ${o.a} and hop ${o.op==="+"?"RIGHT →":"← LEFT"}`,o.op==="+"?"good":"oops");
+  say(`${o.a} ${word(o.op)} ${o.b}. Start on ${o.a} and hop ${o.op==="+"?"right":"left"}.`);
+  clearArcs();setFrog(o.a);mark(o.a,"start");mark(null,"land");
+  await new Promise(r=>setTimeout(r,reduce?0:300));
+  await hopRun(o.a,o.op,o.b);mark(o.c,"land");
+  btn.classList.add("used");
+  const room=$("rooms").children[F.found];room.innerHTML=modelHTML(o.a,o.op,o.b,o.c);room.classList.add("filled");
+  F.found++;addStar();state.busy=false;
+  if(F.found===4){
+    $("cards").querySelectorAll(".choice:not(.used)").forEach(b=>b.disabled=true);
+    fb("You found the whole family!","good");
+    $("noticeSlot").innerHTML=`<div class="notice"><b>Notice:</b> both <b class="p">+</b> facts start small and hop <b class="p">RIGHT</b> to ${F.w}. Both <b class="m">${MINUS}</b> facts start on ${F.w} and hop <b class="m">LEFT</b>. Same numbers, opposite directions!</div>`;
+    say(`You found the whole family! The plus facts hop right to ${F.w}. The minus facts start on ${F.w} and hop left.`);
+    $("next").hidden=false;$("next").focus();
+  }
+}
+
+/* ---------- wiring ---------- */
+const modes={hop:startHop,which:startWhich,family:startFamily};
+function setMode(m){state.mode=m;["hop","which","family"].forEach(k=>$("m-"+k).setAttribute("aria-pressed",k===m));state.busy=false;try{speechSynthesis.cancel()}catch(e){}modes[m]()}
+function setLevel(n){state.max=n;$("lv10").setAttribute("aria-pressed",n===10);$("lv20").setAttribute("aria-pressed",n===20);P=Q=F=null;setMode(state.mode)}
+$("m-hop").onclick=()=>setMode("hop");$("m-which").onclick=()=>setMode("which");$("m-family").onclick=()=>setMode("family");
+$("lv10").onclick=()=>setLevel(10);$("lv20").onclick=()=>setLevel(20);
+$("readBtn").onclick=()=>say(state.speak);
+document.addEventListener("keydown",e=>{if(state.mode!=="hop"||!$("goL"))return;if(e.key==="ArrowLeft")$("goL").click();if(e.key==="ArrowRight")$("goR").click()});
+$("starCount").textContent=state.stars;
+setLevel(state.max);
+})();
+</script>
+
+
+</body>
+</html>
