@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diwali Word Lights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600;700&display=swap">
+<style>
+/* Layout: a Diwali night sky. Home = four group cards. Game = a row of diyas on top, the rangoli beside one big question card. */
+:root {
+  color-scheme: dark;
+  --night: #1a1238;
+  --night-2: #261b52;
+  --night-3: #33266b;
+  --ink: #fdf6e8;
+  --muted: #cbc2ea;
+  --marigold: #ffb627;
+  --magenta: #ff5fa2;
+  --teal: #33d1c1;
+  --leaf: #93dd5a;
+  --violet: #b9a3ff;
+  --coral: #ff9a8a;
+  --clay: #d9662b;
+  --clay-dark: #8c3a14;
+  --display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --read: "Andika", "Verdana", system-ui, sans-serif;
+}
+html, body { height: 100%; }
+body { margin: 0; }
+body {
+  background: radial-gradient(1200px 600px at 50% -10%, #2c1f63 0%, var(--night) 60%) fixed, var(--night);
+  color: var(--ink);
+  font-family: var(--read);
+  font-size: 17px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 28px 48px; display: flex; flex-direction: column; gap: 24px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--marigold); outline-offset: 3px; }
+
+/* ---------- Home ---------- */
+.hero { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.hero h1 { font-size: clamp(38px, 7vw, 64px); font-weight: 700; letter-spacing: -0.5px; line-height: 1.05; }
+.hero h1 span { color: var(--marigold); }
+.hero p { margin: 0; color: var(--muted); max-width: 60ch; font-size: 18px; }
+.diya-strip { display: flex; gap: 10px; }
+.diya-strip svg { width: 34px; height: 40px; }
+.groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.group {
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-start; text-align: left;
+  background: var(--night-2); border: 2px solid var(--night-3); border-radius: 18px; padding: 20px;
+  cursor: pointer; transition: transform .15s ease, border-color .15s ease;
+}
+.group:hover { transform: translateY(-3px); border-color: var(--marigold); }
+.group .dot { width: 14px; height: 14px; border-radius: 50%; }
+.group h2 { font-size: 24px; font-weight: 600; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--read); font-weight: 700; font-size: 15px; padding: 3px 10px; border-radius: 999px; background: var(--night-3); color: var(--ink); }
+.group .go { margin-top: auto; font-family: var(--display); font-weight: 600; color: var(--marigold); }
+.note { color: var(--muted); font-size: 15px; margin: 0; }
+
+/* ---------- Game ---------- */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.back { background: none; border: 2px solid var(--night-3); border-radius: 999px; padding: 8px 16px; cursor: pointer; font-family: var(--display); font-weight: 500; }
+.back:hover { border-color: var(--muted); }
+.topbar h1 { font-size: clamp(24px, 4vw, 32px); font-weight: 600; }
+.count { font-family: var(--display); color: var(--marigold); font-weight: 600; font-variant-numeric: tabular-nums; }
+.diyas { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; max-width: 560px; width: 100%; }
+.diyas svg { width: 100%; height: auto; display: block; }
+.diya .flame, .diya .glow { opacity: 0; transition: opacity .4s ease; }
+.diya .bowl { fill: var(--clay-dark); transition: fill .4s ease; }
+.diya.lit .flame, .diya.lit .glow { opacity: 1; }
+.diya.lit .bowl { fill: var(--clay); }
+.diya.lit .flame { transform-origin: 20px 26px; animation: flicker 1.6s ease-in-out infinite; }
+@keyframes flicker { 0%,100% { transform: scale(1, 1); } 30% { transform: scale(.94, 1.08); } 60% { transform: scale(1.04, .95); } }
+
+.stage { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr); gap: 28px; align-items: center; }
+.rangoli { width: 100%; max-width: 380px; justify-self: center; aspect-ratio: 1; }
+.rangoli svg { width: 100%; height: 100%; display: block; }
+.petal { fill: transparent; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 5 5; transition: fill .5s ease, stroke .5s ease; }
+.petal.on { stroke: var(--ink); stroke-dasharray: none; animation: bloom .5s ease; }
+.center { fill: var(--night-3); stroke: var(--muted); stroke-width: 2; transition: fill .6s ease; }
+@keyframes bloom { from { opacity: .2; } to { opacity: 1; } }
+
+.card { background: var(--night-2); border: 2px solid var(--night-3); border-radius: 22px; padding: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.kind { font-family: var(--display); font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); font-weight: 600; }
+.prompt { font-size: 21px; font-weight: 700; margin: 0; outline: none; }
+.word-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.word { font-family: var(--read); font-weight: 700; font-size: clamp(40px, 7vw, 60px); line-height: 1.1; color: var(--marigold); overflow-wrap: anywhere; }
+.sentence { font-size: 22px; line-height: 1.45; }
+.speak { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--muted); background: var(--night-3); cursor: pointer; display: grid; place-items: center; flex-shrink: 0; }
+.speak:hover { border-color: var(--marigold); }
+.speak svg { width: 24px; height: 24px; }
+.choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.choice {
+  min-height: 60px; padding: 10px 14px; border-radius: 14px; border: 2px solid var(--violet);
+  background: var(--night-3); font-family: var(--read); font-weight: 700; font-size: 22px; cursor: pointer;
+  transition: transform .12s ease, background .2s ease, border-color .2s ease;
+}
+.choice.small { font-size: 18px; }
+.choice:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--marigold); }
+.choice:disabled { cursor: default; }
+.choice.right { background: #24543a; border-color: var(--leaf); }
+.choice.wrong { background: #5a2a3a; border-color: var(--coral); }
+.feedback { min-height: 28px; font-size: 18px; margin: 0; }
+.feedback b.yes { color: var(--leaf); }
+.feedback b.no { color: var(--coral); }
+.next {
+  align-self: flex-start; border: none; border-radius: 999px; padding: 12px 26px; cursor: pointer;
+  background: var(--marigold); color: #2a1a00; font-family: var(--display); font-weight: 600; font-size: 19px;
+}
+.next:hover { filter: brightness(1.08); }
+
+.done { text-align: left; }
+.done h2 { font-size: clamp(30px, 5vw, 42px); color: var(--marigold); }
+.done p { margin: 0; font-size: 19px; }
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.ghost { background: none; border: 2px solid var(--muted); border-radius: 999px; padding: 10px 22px; cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 18px; }
+
+#sparks { position: fixed; inset: 0; pointer-events: none; width: 100%; height: 100%; z-index: 20; }
+
+@media (max-width: 760px) {
+  .stage { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .rangoli { max-width: 230px; }
+  .card { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="sparks" aria-hidden="true"></canvas>
+
+<main class="wrap" id="app"></main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- Question banks ---------------- */
+  function sortCVC(word, isLong) {
+    return {
+      kind: "Sort it", prompt: "Does this word have a short vowel or a long vowel?", word: word, say: word,
+      choices: ["Short vowel · CVC", "Long vowel · CVCe"], answer: isLong ? "Long vowel · CVCe" : "Short vowel · CVC", keep: true, small: true,
+      why: isLong ? "The silent e at the end of " + word + " makes the vowel say its name." : word + " has no e at the end, so the vowel is short."
+    };
+  }
+  function magicE(base, ans, wrong) {
+    return {
+      kind: "Magic e", prompt: "Add a magic e. What is the new word?", word: base + " + e", say: base,
+      choices: [ans].concat(wrong), answer: ans,
+      why: base + " + e = " + ans + ". The vowel now says its name."
+    };
+  }
+  function oddball(list, ans, why) {
+    return { kind: "Oddball", prompt: "Which word ends in e but has a short vowel sound?", say: list.join(", "), choices: list, answer: ans, why: why };
+  }
+  function spell(sentence, ans, wrong, pattern) {
+    return {
+      kind: "Spell it", prompt: "Which spelling is correct?", sentence: sentence, say: sentence.replace("___", ans),
+      choices: [ans].concat(wrong), answer: ans, why: ans + " is spelled with " + pattern + "."
+    };
+  }
+  function fit(sentence, ans, wrong, why, kind) {
+    return {
+      kind: kind || "Meaning", prompt: "Which word makes sense?", sentence: sentence, say: sentence.replace("___", "blank"),
+      choices: [ans].concat(wrong), answer: ans, why: why
+    };
+  }
+  function ending(start, end, full, why) {
+    return {
+      kind: "Pick the ending", prompt: "Which ending finishes the word?", word: start + "___", say: full,
+      choices: ["ture", "cher", "sure", "ure"], answer: end, keep: true, why: why
+    };
+  }
+  function means(q, ans, wrong, why) {
+    return { kind: "Meaning", prompt: q, choices: [ans].concat(wrong), answer: ans, small: true, why: why };
+  }
+  function define(word, ans, wrong, why) {
+    return { kind: "What does it mean?", prompt: "What does this word mean?", word: word, say: word, choices: [ans].concat(wrong), answer: ans, small: true, why: why };
+  }
+  function build(parts, ans, wrong, why) {
+    return { kind: "Build it", prompt: "Put the parts together. Which spelling is correct?", word: parts, say: ans, choices: [ans].concat(wrong), answer: ans, why: why };
+  }
+
+  var NOTURE = "There is no base word, so /cher/ is spelled -ture.";
+  var GROUPS = {
+    cvc: {
+      name: "CVC & CVCe", chips: ["cap", "cape"], color: "var(--marigold)",
+      bank: [
+        sortCVC("brag", false), sortCVC("twig", false), sortCVC("clog", false), sortCVC("plum", false), sortCVC("grub", false), sortCVC("swam", false),
+        sortCVC("flake", true), sortCVC("stride", true), sortCVC("throne", true), sortCVC("tune", true), sortCVC("spoke", true), sortCVC("quake", true),
+        magicE("tap", "tape", ["taap", "tapp"]), magicE("hug", "huge", ["hugg", "huug"]), magicE("mad", "made", ["maad", "madd"]),
+        magicE("not", "note", ["nott", "noot"]), magicE("cut", "cute", ["cutt", "cuut"]), magicE("hid", "hide", ["hidd", "hied"]),
+        oddball(["have", "gave", "cave"], "have", "Have ends in e, but the a is short. Gave and cave have a long a."),
+        oddball(["five", "give", "dive"], "give", "Give ends in e, but the i is short. Five and dive have a long i."),
+        oddball(["home", "dome", "come"], "come", "Come ends in e, but the o does not say its name. Home and dome have a long o.")
+      ]
+    },
+    or: {
+      name: "or · ore · oar", chips: ["fork", "shore", "roar"], color: "var(--teal)",
+      bank: [
+        spell("Soccer is my favorite ___.", "sport", ["spoart", "sporet"], "or"),
+        spell("My brother's loud ___ kept me awake.", "snore", ["snor", "snoar"], "ore"),
+        spell("We played a ___ game with dice.", "board", ["bord", "borde"], "oar"),
+        spell("Washing the dishes is my ___.", "chore", ["chor", "choar"], "ore"),
+        spell("Hold up the ___ to light the way.", "torch", ["toarch", "torche"], "or"),
+        spell("The lion let out a loud ___.", "roar", ["ror", "rore"], "oar"),
+        spell("We built sandcastles on the ___.", "shore", ["shor", "shoar"], "ore"),
+        spell("Eat your salad with a ___.", "fork", ["foark", "forke"], "or"),
+        fit("Eagles ___ high over the mountains.", "soar", ["sore"], "Soar means to fly high. Sore means something hurts."),
+        fit("I fell off my bike, and my knee is ___.", "sore", ["soar"], "Sore means something hurts. Soar means to fly high."),
+        fit("A wild ___ dug in the mud with its tusks.", "boar", ["bore"], "A boar is a wild pig. Bore means to make someone feel bored."),
+        fit("Long waits in line ___ me.", "bore", ["boar"], "Bore means to make someone feel bored. A boar is a wild pig."),
+        fit("Grandpa rode a brown ___ on the farm.", "horse", ["hoarse"], "A horse is an animal. Hoarse means your voice sounds rough."),
+        fit("After cheering all game, my voice was ___.", "hoarse", ["horse"], "Hoarse means your voice sounds rough. A horse is an animal."),
+        fit("Dip the ___ into the water to row the boat.", "oar", ["or", "ore"], "An oar is a paddle. Or is a choosing word. Ore is rock with metal in it."),
+        fit("Miners dig gold ___ out of the ground.", "ore", ["oar", "or"], "Ore is rock with metal in it. An oar is a paddle."),
+        fit("Do you want apples ___ grapes?", "or", ["oar", "ore"], "Or is the word we use when we choose between things.")
+      ]
+    },
+    ture: {
+      name: "-cher · -ture · -sure · -ure", chips: ["teacher", "picture", "treasure", "figure"], color: "var(--magenta)",
+      bank: [
+        ending("pic", "ture", "picture", NOTURE), ending("crea", "ture", "creature", NOTURE),
+        ending("fu", "ture", "future", NOTURE), ending("adven", "ture", "adventure", NOTURE),
+        ending("plea", "sure", "pleasure", "When you hear /zher/ at the end, it is spelled -sure."),
+        ending("mea", "sure", "measure", "When you hear /zher/ at the end, it is spelled -sure."),
+        ending("cat", "cher", "catcher", "Catch is a base word. catch + er = catcher, so it ends in -cher."),
+        ending("pit", "cher", "pitcher", "Pitch is a base word. pitch + er = pitcher, so it ends in -cher."),
+        ending("fig", "ure", "figure", "Figure ends in just -ure, like failure."),
+        ending("fail", "ure", "failure", "Fail is the base word. fail + ure = failure."),
+        means("Which word means to catch something and keep it?", "capture", ["catcher", "pasture"], "Capture is an action: to catch and keep. A catcher is a person."),
+        means("Which word names a person who catches the ball?", "catcher", ["capture", "creature"], "catch + er = catcher, a person who catches."),
+        means("Which word means how something feels when you touch it?", "texture", ["teacher", "treasure"], "Texture is how something feels: bumpy, smooth, or soft."),
+        means("Which word means a grassy field where animals eat?", "pasture", ["pitcher", "posture"], "A pasture is a field of grass for cows and horses."),
+        means("Which word means the time that has not happened yet?", "future", ["figure", "feature"], "The future is tomorrow, next year, and beyond."),
+        means("Which word means a happy, enjoyable feeling?", "pleasure", ["pressure", "pasture"], "Pleasure is a happy feeling. Pressure is a push or a stress."),
+        means("Which word names any living animal?", "creature", ["teacher", "closure"], "A creature is any living animal."),
+        means("Which word means gold and jewels that are hidden?", "treasure", ["texture", "teacher"], "Treasure is a hidden store of valuable things."),
+        means("Which word names a jug for pouring lemonade?", "pitcher", ["picture", "pasture"], "A pitcher is a jug. A picture is a drawing or photo.")
+      ]
+    },
+    suffix: {
+      name: "-al · -ial · -ic", chips: ["coastal", "facial", "heroic"], color: "var(--leaf)",
+      bank: [
+        define("heroic", "like a hero", ["a person who saves people", "without a hero"], "-ic means \"like\" or \"having to do with.\" Heroic means like a hero."),
+        define("coastal", "having to do with the coast", ["the edge of the ocean", "far from the coast"], "-al means \"having to do with.\" The edge of the ocean is the coast itself."),
+        define("musical", "having to do with music", ["a song", "without any music"], "-al means \"having to do with.\" Musical means having to do with music."),
+        define("volcanic", "having to do with a volcano", ["a small volcano", "a mountain with snow"], "-ic means \"having to do with.\" Volcanic rock comes from a volcano."),
+        define("magnetic", "able to pull like a magnet", ["a kind of metal", "not able to stick"], "-ic means \"like.\" Something magnetic pulls like a magnet."),
+        define("facial", "having to do with the face", ["a smile", "the back of your head"], "-ial means \"having to do with.\" A facial expression shows on your face."),
+        define("seasonal", "happening in a certain season", ["a season of the year", "all year long"], "-al means \"having to do with.\" Seasonal fruit grows in one season."),
+        fit("Saving the kitten was a ___ thing to do.", "heroic", ["hero"], "The sentence needs a describing word for thing, so add -ic: heroic.", "Which word fits?"),
+        fit("Big waves crashed along the ___.", "coast", ["coastal"], "The sentence needs a naming word, the coast. Coastal describes something near the coast.", "Which word fits?"),
+        fit("Our ___ flag waves outside the school.", "national", ["nation"], "National describes the flag. It means having to do with the nation.", "Which word fits?"),
+        fit("An ___ trains hard every day.", "athlete", ["athletic"], "The sentence needs a naming word, a person: an athlete.", "Which word fits?"),
+        fit("My sister is very ___. She sings and plays guitar.", "musical", ["music"], "The sentence needs a describing word for my sister: musical.", "Which word fits?"),
+        build("nature + al", "natural", ["natureal", "naturl"], "Drop the e in nature before adding -al: natural."),
+        build("athlete + ic", "athletic", ["athleteic", "athletick"], "Drop the e in athlete before adding -ic: athletic."),
+        build("face + ial", "facial", ["faceial", "facal"], "Drop the e in face before adding -ial: facial."),
+        build("hero + ic", "heroic", ["heroick", "heroec"], "Just add -ic to hero: heroic."),
+        build("globe + al", "global", ["globeal", "globle"], "Drop the e in globe before adding -al: global.")
+      ]
+    }
+  };
+  var ORDER = ["cvc", "or", "ture", "suffix"];
+  var ROUNDS = 10;
+  var COLORS = ["var(--marigold)", "var(--magenta)", "var(--teal)", "var(--leaf)", "var(--violet)"];
+
+  /* ---------------- Helpers ---------------- */
+  var app = document.getElementById("app");
+  var canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance === "function";
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function speak(text) {
+    if (!canSpeak) return;
+    try { window.speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.rate = 0.85; u.lang = "en-US"; window.speechSynthesis.speak(u); } catch (e) {}
+  }
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function diyaSVG(lit) {
+    var w = document.createElement("div");
+    w.className = "diya" + (lit ? " lit" : "");
+    w.innerHTML = '<svg viewBox="0 0 40 48" aria-hidden="true">' +
+      '<circle class="glow" cx="20" cy="18" r="14" fill="#ffb627" opacity=".25"></circle>' +
+      '<path class="flame" d="M20 6 C 26 15, 25 21, 20 26 C 15 21, 14 15, 20 6 Z" fill="#ffcf5c"></path>' +
+      '<path class="flame" d="M20 14 C 22.5 18, 22 22, 20 24.5 C 18 22, 17.5 18, 20 14 Z" fill="#fff4cf"></path>' +
+      '<path class="bowl" d="M3 29 Q 20 50 37 29 Z"></path>' +
+      '<path d="M3 29 H 37" stroke="#ffcf9a" stroke-width="2" stroke-linecap="round" opacity=".6"></path>' +
+      '</svg>';
+    return w;
+  }
+  var SPEAKER = '<svg viewBox="0 0 24 24" fill="none" stroke="#fdf6e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg>';
+
+  /* ---------------- Home ---------------- */
+  function renderHome() {
+    stopSparks();
+    app.innerHTML = "";
+    var hero = el("header", "hero");
+    var strip = el("div", "diya-strip");
+    for (var i = 0; i < 5; i++) strip.appendChild(diyaSVG(true));
+    hero.appendChild(strip);
+    var h1 = el("h1"); h1.innerHTML = "Diwali <span>Word Lights</span>";
+    hero.appendChild(h1);
+    hero.appendChild(el("p", null, "Diwali is the festival of lights. Answer word questions to light 10 diyas and color in the rangoli. Pick your word group to start."));
+    app.appendChild(hero);
+
+    var grid = el("section", "groups");
+    grid.setAttribute("aria-label", "Word groups");
+    ORDER.forEach(function (id) {
+      var g = GROUPS[id];
+      var b = el("button", "group");
+      b.type = "button";
+      var dot = el("span", "dot"); dot.style.background = g.color; b.appendChild(dot);
+      b.appendChild(el("h2", null, g.name));
+      var chips = el("div", "chips");
+      g.chips.forEach(function (c) { chips.appendChild(el("span", "chip", c)); });
+      b.appendChild(chips);
+      b.appendChild(el("span", "go", "Light the diyas →"));
+      b.addEventListener("click", function () { location.hash = id; });
+      grid.appendChild(b);
+    });
+    app.appendChild(grid);
+    app.appendChild(el("p", "note", "Tip: tap the speaker button to hear a word or sentence read aloud."));
+  }
+
+  /* ---------------- Game ---------------- */
+  var S = null;
+
+  function startGame(id) {
+    var g = GROUPS[id];
+    S = { id: id, g: g, queue: shuffle(g.bank).slice(0, ROUNDS).map(function (q) { return Object.assign({ missed: false }, q); }), lit: 0, firstTry: 0, answered: false };
+    renderGame();
+  }
+
+  function renderGame() {
+    stopSparks();
+    app.innerHTML = "";
+    var top = el("div", "topbar");
+    var back = el("button", "back", "← All groups");
+    back.type = "button";
+    back.addEventListener("click", function () { location.hash = ""; });
+    top.appendChild(back);
+    var h = el("h1", null, S.g.name);
+    top.appendChild(h);
+    var count = el("span", "count"); count.id = "count";
+    top.appendChild(count);
+    app.appendChild(top);
+
+    var row = el("div", "diyas"); row.id = "diyas";
+    row.setAttribute("aria-hidden", "true");
+    for (var i = 0; i < ROUNDS; i++) row.appendChild(diyaSVG(false));
+    app.appendChild(row);
+
+    var stage = el("section", "stage");
+    var rg = el("div", "rangoli"); rg.id = "rangoli";
+    rg.appendChild(buildRangoli());
+    stage.appendChild(rg);
+    var card = el("div", "card"); card.id = "card";
+    stage.appendChild(card);
+    app.appendChild(stage);
+    updateProgress();
+    showQuestion();
+  }
+
+  function buildRangoli() {
+    var svg = document.createElementNS(SVGNS, "svg");
+    svg.setAttribute("viewBox", "-150 -150 300 300");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Rangoli design that fills with color as you answer");
+    for (var d = 0; d < 20; d++) {
+      var a = (d / 20) * Math.PI * 2;
+      var c = document.createElementNS(SVGNS, "circle");
+      c.setAttribute("cx", (Math.cos(a) * 138).toFixed(1));
+      c.setAttribute("cy", (Math.sin(a) * 138).toFixed(1));
+      c.setAttribute("r", d % 2 ? "3" : "5");
+      c.setAttribute("fill", "#ffb627");
+      c.setAttribute("opacity", ".55");
+      svg.appendChild(c);
+    }
+    for (var i = 0; i < ROUNDS; i++) {
+      var p = document.createElementNS(SVGNS, "path");
+      p.setAttribute("d", "M0,-30 C24,-52 24,-96 0,-122 C-24,-96 -24,-52 0,-30 Z");
+      p.setAttribute("transform", "rotate(" + (i * 360 / ROUNDS) + ")");
+      p.setAttribute("class", "petal");
+      p.setAttribute("id", "petal-" + i);
+      svg.appendChild(p);
+    }
+    var center = document.createElementNS(SVGNS, "circle");
+    center.setAttribute("r", "24"); center.setAttribute("class", "center"); center.setAttribute("id", "rcenter");
+    svg.appendChild(center);
+    return svg;
+  }
+
+  function updateProgress() {
+    var c = document.getElementById("count");
+    if (c) c.textContent = S.lit + " of " + ROUNDS + " diyas lit";
+    var ds = document.querySelectorAll("#diyas .diya");
+    for (var i = 0; i < ds.length; i++) ds[i].classList.toggle("lit", i < S.lit);
+    for (var j = 0; j < ROUNDS; j++) {
+      var p = document.getElementById("petal-" + j);
+      if (!p) continue;
+      var on = j < S.lit;
+      p.classList.toggle("on", on);
+      p.style.fill = on ? COLORS[j % COLORS.length] : "";
+    }
+  }
+
+  function showQuestion() {
+    var q = S.queue[0];
+    S.answered = false;
+    var card = document.getElementById("card");
+    card.innerHTML = "";
+    card.appendChild(el("span", "kind", q.kind));
+    var p = el("h2", "prompt", q.prompt);
+    p.tabIndex = -1;
+    card.appendChild(p);
+
+    if (q.word || q.sentence) {
+      var wr = el("div", "word-row");
+      if (q.word) wr.appendChild(el("span", "word", q.word));
+      else wr.appendChild(el("span", "sentence", q.sentence.replace("___", "______")));
+      if (canSpeak && q.say) {
+        var sp = el("button", "speak");
+        sp.type = "button";
+        sp.setAttribute("aria-label", "Read it aloud");
+        sp.innerHTML = SPEAKER;
+        sp.addEventListener("click", function () { speak(q.say); });
+        wr.appendChild(sp);
+      }
+      card.appendChild(wr);
+    }
+
+    var ch = el("div", "choices");
+    var opts = q.keep ? q.choices : shuffle(q.choices);
+    opts.forEach(function (o) {
+      var b = el("button", "choice" + (q.small ? " small" : ""), o);
+      b.type = "button";
+      b.addEventListener("click", function () { answer(o, b); });
+      ch.appendChild(b);
+    });
+    card.appendChild(ch);
+    var fb = el("p", "feedback"); fb.id = "feedback"; fb.setAttribute("aria-live", "polite");
+    card.appendChild(fb);
+    p.focus({ preventScroll: true });
+  }
+
+  function answer(choice, btn) {
+    if (S.answered) return;
+    S.answered = true;
+    var q = S.queue[0];
+    var buttons = document.querySelectorAll("#card .choice");
+    buttons.forEach(function (b) { b.disabled = true; if (b.textContent === q.answer) b.classList.add("right"); });
+    var fb = document.getElementById("feedback");
+    fb.innerHTML = "";
+    var b = el("b");
+    if (choice === q.answer) {
+      if (!q.missed) S.firstTry++;
+      S.lit++;
+      S.queue.shift();
+      b.className = "yes"; b.textContent = "Yes! ";
+      fb.appendChild(b); fb.appendChild(document.createTextNode(q.why));
+      updateProgress();
+    } else {
+      btn.classList.add("wrong");
+      q.missed = true;
+      S.queue.push(S.queue.shift());
+      b.className = "no"; b.textContent = "Not quite. ";
+      fb.appendChild(b); fb.appendChild(document.createTextNode(q.why + " You'll see this one again."));
+    }
+    var next = el("button", "next", S.lit >= ROUNDS ? "Finish" : "Next");
+    next.type = "button";
+    next.addEventListener("click", function () { if (S.lit >= ROUNDS) finish(); else showQuestion(); });
+    document.getElementById("card").appendChild(next);
+    next.focus({ preventScroll: true });
+  }
+
+  function finish() {
+    var center = document.getElementById("rcenter");
+    if (center) center.style.fill = "var(--marigold)";
+    var card = document.getElementById("card");
+    card.innerHTML = "";
+    card.classList.add("done");
+    var h = el("h2", null, "Happy Diwali!");
+    h.tabIndex = -1;
+    card.appendChild(h);
+    card.appendChild(el("p", null, "You lit all " + ROUNDS + " diyas and finished the rangoli."));
+    card.appendChild(el("p", null, "Right on the first try: " + S.firstTry + " of " + ROUNDS + "."));
+    var row = el("div", "row");
+    var again = el("button", "next", "Play again");
+    again.type = "button";
+    again.addEventListener("click", function () { startGame(S.id); });
+    var other = el("button", "ghost", "Choose a group");
+    other.type = "button";
+    other.addEventListener("click", function () { location.hash = ""; });
+    row.appendChild(again); row.appendChild(other);
+    card.appendChild(row);
+    h.focus({ preventScroll: true });
+    sparks();
+  }
+
+  /* ---------------- Celebration sparks ---------------- */
+  var sparkTimer = null;
+  function stopSparks() {
+    if (sparkTimer) { cancelAnimationFrame(sparkTimer); sparkTimer = null; }
+    var cv = document.getElementById("sparks");
+    var cx = cv.getContext("2d"); cx.clearRect(0, 0, cv.width, cv.height);
+  }
+  function sparks() {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var cv = document.getElementById("sparks");
+    var ctx = cv.getContext("2d");
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var palette = ["#ffb627", "#ff5fa2", "#33d1c1", "#93dd5a", "#b9a3ff", "#ffcf5c"];
+    var parts = [];
+    function burst() {
+      var x = innerWidth * (0.15 + Math.random() * 0.7), y = innerHeight * (0.12 + Math.random() * 0.4);
+      var col = palette[Math.floor(Math.random() * palette.length)];
+      for (var i = 0; i < 46; i++) {
+        var a = Math.random() * Math.PI * 2, s = 1.5 + Math.random() * 3.5;
+        parts.push({ x: x, y: y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 70 + Math.random() * 30, c: col });
+      }
+    }
+    var frame = 0;
+    function tick() {
+      frame++;
+      if (frame < 150 && frame % 22 === 1) burst();
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      parts = parts.filter(function (p) { return p.life > 0; });
+      parts.forEach(function (p) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.vx *= 0.985; p.life--;
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 60));
+        ctx.fillStyle = p.c;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 2.4, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      if (frame < 150 || parts.length) sparkTimer = requestAnimationFrame(tick);
+      else { sparkTimer = null; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+    }
+    stopSparks();
+    sparkTimer = requestAnimationFrame(tick);
+  }
+
+  /* ---------------- Routing ---------------- */
+  function route() {
+    var id = (location.hash || "").replace("#", "");
+    if (GROUPS[id]) startGame(id); else renderHome();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+
+</body>
+</html>
