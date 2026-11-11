@@ -1,6 +1,6 @@
 // One Less Thing! — page logic. Talks to the data layer only through the
-// backend object `B` (see backend-firebase.js), so who can read what is
-// enforced by the server's security rules, not by this file.
+// backend object `B` (see backend-sheets.js), so who can read what is
+// enforced by apps-script.gs on Google's servers, not by this file.
 
 const TIME = {lt15:{l:"Under 15 min",h:.15},"15to60":{l:"15–60 min",h:.6},"1to3":{l:"1–3 hours",h:2},"3plus":{l:"3+ hours",h:4}};
 const S = {user:null,admin:false,mine:[],list:[],responses:[],dismissed:[],
