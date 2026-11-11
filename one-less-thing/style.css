@@ -1,19 +1,28 @@
+/* Lausanne brand colors (Branding Quick Reference):
+   Lausanne blue (navy) #00274C · green #679423 · red #D9002A
+   Status colors: navy = on the list, green = in progress, solid green = knocked off, red = the strike. */
 :root{
   color-scheme:light;
-  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#141B26; --muted:#5A6577; --line:#DCE1E8;
-  --accent:#2C4FD1; --accent-soft:#E6ECFD; --strike:#D7263D; --mark:#FFE36B;
-  --good:#1D7F55; --good-soft:#E2F4EB; --warn:#9A6212; --warn-soft:#FBF0DC;
+  --bg:#F4F6F9; --surface:#FFFFFF; --ink:#00274C; --muted:#4A5F7A; --line:#D6DEE8;
+  --accent:#00274C; --accent-soft:#E1E8F1;
+  --strike:#D9002A; --mark:#CFE3AE;
+  --green:#679423; --good:#4A7319; --good-soft:#EAF2DD; --on-good:#FFFFFF;
+  --warn:#A8001F; --warn-soft:#FBE3E7;
   --display:"Bricolage Grotesque", "Inter", system-ui, sans-serif;
   --body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0E131A; --surface:#171E28; --ink:#E7EBF1; --muted:#96A1B2; --line:#2A3442;
-  --accent:#86A0FF; --accent-soft:#1E2945; --strike:#FF6B7D; --mark:#6B5A12;
-  --good:#53C792; --good-soft:#15302A; --warn:#E3AE5A; --warn-soft:#33281A; color-scheme:dark}}
+  --bg:#0B1626; --surface:#12213A; --ink:#E8EDF4; --muted:#A9B8CC; --line:#24344F;
+  --accent:#8FB3E0; --accent-soft:#1A2F4F;
+  --strike:#FF5A6E; --mark:#3E5A1F;
+  --green:#7FAE3A; --good:#A5D06A; --good-soft:#1E3317; --on-good:#0B1626;
+  --warn:#FF8496; --warn-soft:#3A1520; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0E131A; --surface:#171E28; --ink:#E7EBF1; --muted:#96A1B2; --line:#2A3442;
-  --accent:#86A0FF; --accent-soft:#1E2945; --strike:#FF6B7D; --mark:#6B5A12;
-  --good:#53C792; --good-soft:#15302A; --warn:#E3AE5A; --warn-soft:#33281A; color-scheme:dark}
+  --bg:#0B1626; --surface:#12213A; --ink:#E8EDF4; --muted:#A9B8CC; --line:#24344F;
+  --accent:#8FB3E0; --accent-soft:#1A2F4F;
+  --strike:#FF5A6E; --mark:#3E5A1F;
+  --green:#7FAE3A; --good:#A5D06A; --good-soft:#1E3317; --on-good:#0B1626;
+  --warn:#FF8496; --warn-soft:#3A1520; color-scheme:dark}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -38,6 +47,7 @@ h1 .less::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.08em;hei
 .tally div{display:flex;align-items:baseline;gap:6px}
 .tally b{font-family:var(--display);font-size:1.5rem;font-weight:800}
 .tally .gone b{color:var(--strike)}
+.tally .prog b{color:var(--good)}
 
 nav.tabs{display:flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
 nav.tabs a{flex:1;text-align:center;padding:8px 12px;border-radius:7px;color:var(--muted);text-decoration:none;font-weight:600;white-space:nowrap}
@@ -75,8 +85,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .items{display:flex;flex-direction:column;gap:10px;list-style:none;margin:0;padding:0}
 .item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:4px 14px}
 .item .tick{grid-row:span 3;width:22px;height:22px;margin-top:2px;border:2px solid var(--muted);border-radius:5px;position:relative}
-.item.working .tick{border-color:var(--warn)}
-.item.done .tick{border-color:var(--strike);background:var(--strike)}
+.item.working .tick{border-color:var(--green);border-width:3px}
+.item.done .tick{border-color:var(--green);background:var(--green)}
 .item.done .tick::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
 .item .t{font-weight:600;font-size:1.05rem;min-width:0;overflow-wrap:anywhere}
 .item.done .t{text-decoration:line-through;text-decoration-color:var(--strike);text-decoration-thickness:3px;color:var(--muted)}
@@ -85,8 +95,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.85rem;color:var(--muted)}
 .pill{display:inline-block;padding:1px 9px;border-radius:99px;font-size:.78rem;font-weight:600}
 .pill.open{background:var(--accent-soft);color:var(--accent)}
-.pill.working{background:var(--warn-soft);color:var(--warn)}
-.pill.done{background:var(--good-soft);color:var(--good)}
+.pill.working{background:var(--good-soft);color:var(--good)}
+.pill.done{background:var(--good);color:var(--on-good)}
 .pill.you{background:var(--mark);color:var(--ink)}
 .changed{font-size:.92rem}
 .changed b{font-weight:600}

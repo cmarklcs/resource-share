@@ -63,7 +63,7 @@ function renderTally(){
   const open=S.list.length-done;
   $("#tally").innerHTML = S.listLoaded ? `
     <div class="gone"><b>${done}</b><span class="muted">knocked off</span></div>
-    <div><b>${working}</b><span class="muted">in progress</span></div>
+    <div class="prog"><b>${working}</b><span class="muted">in progress</span></div>
     <div><b>${open}</b><span class="muted">still on the list</span></div>` : `<span class="muted">${S.offline?"The list can't be reached right now.":"Loading the list…"}</span>`;
 }
 
