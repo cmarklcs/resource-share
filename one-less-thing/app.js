@@ -55,7 +55,7 @@ function renderFoot(){
   const lock=$("#lock"), st=$("#admin-status");
   lock.setAttribute("aria-pressed",S.admin?"true":"false");
   lock.setAttribute("aria-label",S.admin?"Open the Master list":"Admin sign-in");
-  st.innerHTML=S.admin?`Admin: ${esc(S.user&&S.user.email)} · <button type="button" class="small link" id="signout">Sign out</button>`:"";
+  st.innerHTML=S.admin?`Signed in as admin · <button type="button" class="small link" id="signout">Sign out</button>`:"";
 }
 
 function renderTally(){
@@ -157,7 +157,7 @@ function renderReview(){
 }
 
 /* ---------- actions ---------- */
-async function run(fn){ try{ await fn(); }catch(e){ console.error(e); flash(e&&e.code==="permission-denied"?"You don't have permission to change that.":"That didn't save. Try again."); } }
+async function run(fn){ try{ await fn(); }catch(e){ console.error(e); flash(e&&e.code==="unauthorized"?"Your admin sign-in has ended. Click the lock to sign in again.":"That didn't save. Try again."); } }
 function flash(m){
   const p=$("#p-"+currentTab()); const d=document.createElement("div");
   d.className="note"; d.setAttribute("role","alert"); d.textContent=m; p.prepend(d); setTimeout(()=>d.remove(),6000);
@@ -210,13 +210,21 @@ $("#form").addEventListener("submit",async e=>{
 });
 
 /* ---------- hidden admin sign-in ---------- */
-let signingIn=false;
-$("#lock").addEventListener("click",async()=>{
+const LOGIN_ERR={"wrong-passcode":"That passcode isn't right.","too-many-tries":"Too many wrong tries. Wait 10 minutes and try again.",
+  "not-set-up":"No admin passcode is set in the Apps Script yet."};
+$("#lock").addEventListener("click",()=>{
   if(S.admin){ location.hash="review"; return; }
-  if(signingIn||!B) return; signingIn=true;
-  try{ await B.signInAdmin(); /* onAuth takes it from here */ }
-  catch(e){ if(e&&e.code!=="auth/popup-closed-by-user"&&e.code!=="auth/cancelled-popup-request"){ console.error(e); flash("Sign-in didn't work. Try again."); } }
-  finally{ signingIn=false; }
+  if(!B) return;
+  $("#admin-msg").textContent=""; $("#admin-pass").value=""; $("#admin-dlg").showModal(); $("#admin-pass").focus();
+});
+$("#admin-cancel").addEventListener("click",()=>$("#admin-dlg").close());
+$("#admin-form").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const pass=$("#admin-pass").value; if(!pass) return;
+  const go=$("#admin-go"); go.disabled=true; $("#admin-msg").textContent="Checking…";
+  try{ await B.signInAdmin(pass); $("#admin-dlg").close(); /* onAuth takes it from here */ }
+  catch(err){ $("#admin-msg").textContent=LOGIN_ERR[err&&err.code]||"Sign-in didn't work. Try again."; $("#admin-pass").select(); }
+  finally{ go.disabled=false; }
 });
 document.addEventListener("click",async e=>{
   if(e.target.id!=="signout") return;
@@ -236,7 +244,12 @@ function stop(key){ if(unsubs[key]){unsubs[key]();delete unsubs[key];} }
 
 async function onUser(u){
   S.user=u;
-  stop("responses"); stop("triage"); S.admin=false; S.responses=[]; S.dismissed=[]; S.respLoaded=false; S.mine=[];
+  const wasAdmin=S.admin;
+  stop("responses"); stop("triage"); S.admin=false; S.responses=[]; S.dismissed=[]; S.respLoaded=false;
+  if(wasAdmin){ // leave no admin controls on screen, even mid-edit
+    S.ui={open:{},adding:null,knocking:null,editing:null,confirmDel:null};
+    if(document.activeElement&&document.activeElement.closest(".panel")) document.activeElement.blur();
+  }
   render();
   if(!u) return;
   watch("mine",(n,er)=>B.watchMine(u.uid,n,er),items=>{S.mine=items;});
@@ -250,7 +263,7 @@ async function onUser(u){
     render();
   } else {
     await B.signOut();
-    flash(`${u.email||"That account"} doesn't have admin access.`);
+    flash("Your admin sign-in has ended. Click the lock to sign in again.");
   }
 }
 
@@ -263,6 +276,6 @@ export function start(backend){
 
 export function showSetupNeeded(){
   const n=$("#ask-note"); n.className="note"; n.hidden=false;
-  n.textContent="This page isn't connected to its database yet. The admin needs to finish the setup in firebase-config.js.";
+  n.textContent="This page isn't connected to its database yet. The admin needs to add the Apps Script URL in main.js.";
   $("#f-submit").disabled=true; S.offline=true; render();
 }

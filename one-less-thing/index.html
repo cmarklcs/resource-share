@@ -71,6 +71,20 @@
     </button>
   </footer>
 </div>
+<dialog id="admin-dlg" aria-labelledby="admin-h">
+  <form id="admin-form" method="dialog" class="dlg">
+    <h2 id="admin-h">Admin sign-in</h2>
+    <div>
+      <label for="admin-pass">Passcode</label>
+      <input type="password" id="admin-pass" autocomplete="current-password" required>
+    </div>
+    <p id="admin-msg" class="privacy" role="status"></p>
+    <div class="row">
+      <button class="primary" type="submit" id="admin-go">Sign in</button>
+      <button type="button" id="admin-cancel">Cancel</button>
+    </div>
+  </form>
+</dialog>
 <script type="module" src="main.js"></script>
 </body>
 </html>

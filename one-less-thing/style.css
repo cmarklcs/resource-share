@@ -114,4 +114,10 @@ details summary{cursor:pointer;color:var(--muted);font-weight:600}
 .lock:hover,.lock:focus-visible{opacity:.9}
 .lock[aria-pressed="true"]{opacity:.7;color:var(--good)}
 
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:0;width:min(360px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(10,14,20,.45)}
+.dlg{display:flex;flex-direction:column;gap:14px;padding:20px}
+input[type=password]{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+#admin-msg:not(:empty){color:var(--strike)}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

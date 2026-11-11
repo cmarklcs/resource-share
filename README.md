@@ -8,4 +8,4 @@ A page where Lausanne teachers share websites and resources they find with each 
 
 ## Other pages
 
-- `one-less-thing/`: One Less Thing!, where teachers share one task that adds little value. Uses Firebase; setup is in `one-less-thing/README.md`.
+- `one-less-thing/`: One Less Thing!, where teachers share one task that adds little value. Uses its own Google Sheet and Apps Script; setup is in `one-less-thing/README.md`.

@@ -4,28 +4,34 @@ Live at <https://cmarklcs.github.io/resource-share/one-less-thing/>.
 
 ## How it works
 
-- **Teachers** open the link and submit. No login: Firebase gives each browser an anonymous ID so "What you've shared" works on that device. Teachers see "Share yours" and "The list" only.
-- **Admin** clicks the faint lock icon at the bottom right and signs in with Google. If that Google account is listed in `firestore.rules`, the Master list tab appears. Anyone else is told they don't have admin access and is signed back out.
-- **Security** is enforced by Firebase on the server (`firestore.rules`), not by hiding things in the page. Even someone who reads the page's code can't read other people's submissions.
+- **Teachers** open the link and submit. No login. Each browser gets a private random key, so "What you've shared" shows their own entries on that device. Teachers see "Share yours" and "The list" only.
+- **Admin** clicks the faint lock icon at the bottom right and enters the admin passcode. The Master list tab appears. The sign-in lasts 6 hours or until **Sign out**.
+- **Data** lives in a private Google Sheet. The page never reads the Sheet directly. It goes through an Apps Script web app (`apps-script.gs`) that decides what each request may see:
 
-| Data | Who can read | Who can write |
+| Data (Sheet tab) | Who can read | Who can change |
 |---|---|---|
-| `responses/{id}` (submissions) | Admin, plus each person their own | Each person, their own only |
+| `responses` (submissions) | Admin; each browser its own | Anyone can add |
 | `list` (The list) | Everyone | Admin |
-| `triage` (set-aside items) | Admin | Admin |
+| `setaside` | Admin | Admin |
 
-## One-time setup (about 10 minutes)
+- The passcode is stored only in the script's private settings, never in the page, so reading the page's code doesn't reveal it. After 10 wrong passcodes, sign-in pauses for 10 minutes.
+- Teachers' names and emails are never collected. The `owner` column holds a scrambled version of each browser's key, not anything identifying.
 
-1. **Create a Firebase project.** Go to <https://console.firebase.google.com>, choose *Add project*, and name it (e.g. `one-less-thing`). Google Analytics is not needed.
-2. **Turn on sign-in.** *Build → Authentication → Get started → Sign-in method*: enable **Anonymous** and **Google**.
-3. **Allow your GitHub Pages address.** *Authentication → Settings → Authorized domains → Add domain*: `cmarklcs.github.io`.
-4. **Create the database.** *Build → Firestore Database → Create database*, production mode, any nearby location.
-5. **Set the security rules.** *Firestore Database → Rules*: paste the contents of `firestore.rules`, replace `ADMIN_EMAIL_HERE` with your Google account email (add more admins as extra `'email'` entries, comma-separated), then **Publish**.
-6. **Connect the page.** *Project settings (gear) → Your apps → Web (`</>`)*, register an app, and copy the `firebaseConfig` values into `firebase-config.js`. Commit and push. These values are safe to make public.
-7. Open the page, click the lock at the bottom right, and sign in. The Master list should appear.
+## One-time setup (about 5 minutes)
 
-### Adding or removing an admin
-Edit the email list in the Firestore **Rules** tab and publish. Keep `firestore.rules` in this folder in step with it.
+1. **Make the Sheet.** Create a new Google Sheet (e.g. "One Less Thing responses"). Keep it private.
+2. **Add the script.** In the Sheet: *Extensions → Apps Script*. Delete what's there, paste all of `apps-script.gs`, and save.
+3. **Create the tabs.** In the editor's function menu choose `setup` and click **Run**. Approve the permissions prompt (it's your own script). Three tabs appear: `responses`, `list`, `setaside`.
+4. **Set the passcode.** *Project Settings (gear) → Script properties → Add script property*: name `ADMIN_PASSCODE`, value a passcode only you know (use something long). Save.
+5. **Deploy.** *Deploy → New deployment → type: Web app*. Execute as: **Me**. Who has access: **Anyone**. Deploy, then copy the **Web app URL** (ends in `/exec`).
+6. **Connect the page.** Put that URL in `API_URL` at the top of `main.js`, commit and push.
+7. Open the page, click the lock at the bottom right, and enter your passcode.
 
-### Limiting who can submit (optional)
-Right now anyone with the link can submit. To limit submissions to school Google accounts, ask for a change that switches teachers from anonymous sign-in to Google sign-in restricted to your school domain.
+### Changing the script later
+After editing the script, use *Deploy → Manage deployments → Edit (pencil) → Version: New version → Deploy*. That keeps the same URL.
+
+### Changing the passcode
+Edit `ADMIN_PASSCODE` in Script properties. Anyone already signed in stays signed in until their 6 hours run out.
+
+### Working in the Sheet directly
+You can read every submission in the `responses` tab at any time. Avoid editing the `id` columns; the page uses them to link submissions to list items.
