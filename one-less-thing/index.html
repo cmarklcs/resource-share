@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>One Less Thing!</title>
+<meta name="description" content="Tell us one thing we ask you to do that adds little or no value.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="box" aria-hidden="true"></div>
+      <h1>One <span class="less">Less</span> Thing!</h1>
+    </div>
+    <p class="lede">Tell us one thing we ask you to do that adds little or no value. We'll gather every answer into one list and work through it, crossing things off one at a time.</p>
+    <div class="tally" id="tally" aria-live="polite"></div>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Sections">
+    <a href="#ask" data-tab="ask">Share yours</a>
+    <a href="#list" data-tab="list">The list</a>
+    <a href="#review" data-tab="review" hidden>Master list</a>
+  </nav>
+
+  <section class="panel" id="p-ask">
+    <div id="ask-note" hidden></div>
+    <form class="card" id="form" novalidate>
+      <p class="q">What's one thing we currently ask you to do that you believe adds little or no value?</p>
+      <div>
+        <label for="f-text">The thing</label>
+        <textarea id="f-text" maxlength="600" placeholder="e.g. Filling out the weekly duty log on paper and again in the online form" required></textarea>
+      </div>
+      <div>
+        <label for="f-why">Why it adds little value, or what would work better <span class="opt">(optional)</span></label>
+        <textarea id="f-why" maxlength="1200" style="min-height:72px"></textarea>
+      </div>
+      <div>
+        <label id="time-l">About how much of your time does it take each week? <span class="opt">(optional)</span></label>
+        <div class="chips" role="radiogroup" aria-labelledby="time-l">
+          <label><input type="radio" name="time" value="lt15"><span>Under 15 min</span></label>
+          <label><input type="radio" name="time" value="15to60"><span>15–60 min</span></label>
+          <label><input type="radio" name="time" value="1to3"><span>1–3 hours</span></label>
+          <label><input type="radio" name="time" value="3plus"><span>3+ hours</span></label>
+        </div>
+      </div>
+      <div class="row">
+        <button class="primary" type="submit" id="f-submit">Submit</button>
+        <span id="f-status" class="muted" role="status"></span>
+      </div>
+      <p class="privacy">Only the admin sees what you submit, and your name is not collected. It appears on The list only after the admin moves it there. You can come back and add more than one thing.</p>
+    </form>
+    <div class="card" id="mine-card" hidden>
+      <h2>What you've shared</h2>
+      <p class="privacy">Saved in this browser. You'll see these again when you come back on this device.</p>
+      <ul class="mine" id="mine"></ul>
+    </div>
+  </section>
+
+  <section class="panel" id="p-list" hidden></section>
+  <section class="panel" id="p-review" hidden></section>
+
+  <footer class="foot">
+    <span id="admin-status"></span>
+    <button type="button" id="lock" class="lock" aria-label="Admin sign-in">
+      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 1 1 6 0v3H9Z"/></svg>
+    </button>
+  </footer>
+</div>
+<script type="module" src="main.js"></script>
+</body>
+</html>
