@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>One Less Thing! Tickets</title>
+<meta name="description" content="Use a ticket to take one thing off your plate for a day.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="box" aria-hidden="true"></div>
+      <h1>One <span class="less">Less</span> Thing! <span class="sub">Tickets</span></h1>
+    </div>
+    <p class="lede">Use a ticket to take one thing off your plate for a day. Request it at least 24 hours ahead so your duty can be covered. Once it's approved, it's yours.</p>
+    <div class="who" id="who" hidden></div>
+  </header>
+
+  <section class="card signin" id="signin">
+    <h2>Sign in to see your tickets</h2>
+    <p class="muted">Use your school Google account.</p>
+    <div id="gbtn" class="gbtn"></div>
+    <p id="signin-msg" class="privacy" role="status"></p>
+  </section>
+
+  <nav class="tabs" id="tabs" aria-label="Sections" hidden>
+    <a href="#mine" data-tab="mine">My tickets</a>
+    <a href="#approve" data-tab="approve" data-admin hidden>To approve</a>
+    <a href="#coverage" data-tab="coverage" data-admin hidden>Coverage</a>
+    <a href="#teachers" data-tab="teachers" data-admin hidden>Teachers</a>
+  </nav>
+
+  <section class="panel" id="p-mine" hidden>
+    <div class="tix" id="tix"></div>
+
+    <form class="card" id="form" novalidate>
+      <h2>Request a ticket</h2>
+      <div class="grid2">
+        <div>
+          <label for="f-ticket">Ticket</label>
+          <select id="f-ticket" required></select>
+        </div>
+        <div>
+          <label for="f-date">Day to use it</label>
+          <input type="date" id="f-date" required>
+        </div>
+      </div>
+      <div>
+        <label for="f-note">Note for the admin <span class="opt">(optional)</span></label>
+        <input type="text" id="f-note" maxlength="300" placeholder="e.g. Which lunch duty, or anything that helps with coverage">
+      </div>
+      <p class="privacy" id="f-rule"></p>
+      <div class="row">
+        <button class="primary" type="submit" id="f-submit">Send request</button>
+        <span id="f-status" class="muted" role="status"></span>
+      </div>
+    </form>
+
+    <div class="card">
+      <h2>My requests</h2>
+      <ul class="reqs" id="my-reqs"></ul>
+    </div>
+  </section>
+
+  <section class="panel" id="p-approve" hidden></section>
+  <section class="panel" id="p-coverage" hidden></section>
+  <section class="panel" id="p-teachers" hidden></section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
